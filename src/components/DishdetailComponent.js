@@ -8,53 +8,63 @@ import {
 } from "reactstrap";
 
 class Dishdetail extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     formatDate(date) {
-        return date.toLocaleDateString();
+        return new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit"
+        }).format(new Date(Date.parse(date)));
     }
 
     renderDish(dish) {
-        return (
-            <Card>
-                <CardImg width="100%" src={dish.image} alt={dish.name} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
-        );
+        if (dish != null) {
+            return (
+                <Card>
+                    <CardImg width="100%" src={dish.image} alt={dish.name} />
+                    <CardBody>
+                        <CardTitle>{dish.name}</CardTitle>
+                        <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            );
+        } else {
+            return (
+                <div></div>
+            );
+        }
+        
     }
 
-    renderComments(comments) {
-        if (comments != null) {
-            const listComments = comments.map((comment) => {
-                let date = " " + new Intl.DateTimeFormat("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit"
-                }).format(comments.date);
+    renderComments(dish) {
+        if(dish != null) {
+            let comments = dish.comments;
+
+            if (comments != null) {
+                const listComments = comments.map((comment) => {
+                    return (
+                        <div className="Comment">
+                            <p className="Comment-text">{comment.comment}</p>
+                            <p className="Comment-date">
+                                -- {comment.author}, {this.formatDate(comment.date)}
+                            </p>
+                        </div>
+                    );
+                });
 
                 return (
-                    <div className="Comment">
-                        <p className="Comment-text">{comment.comment}</p>
-                        <p className="Comment-date">
-                            -- {comment.author}, {date}
-                        </p>
+                    <div>
+                        <h4>Comments</h4>
+                        <div className="list-unstyled">
+                            {listComments}
+                        </div>
                     </div>
                 );
-            });
-
-            return (
-                <div>
-                    <h4>Comments</h4>
-                    <div className="list-unstyled">
-                        {listComments}
-                    </div>
-                </div>
-            );
+            } else {
+                return (
+                    <div></div>
+                );
+            }
         } else {
             return (
                 <div></div>
@@ -66,12 +76,14 @@ class Dishdetail extends Component {
         const dish = this.props.dish;
 
         return (
-            <div className="row">
-                <div className="col-12 col-md-5 mt-1">
-                    {this.renderDish(dish)}
-                </div>
-                <div className="col-12 col-md-5 mt-1">
-                    {this.renderComments(dish.comments)}
+            <div className="container">
+                <div className="row">
+                    <div className="col-12 col-md-5 mt-1">
+                        {this.renderDish(dish)}
+                    </div>
+                    <div className="col-12 col-md-5 mt-1">
+                        {this.renderComments(dish)}
+                    </div>
                 </div>
             </div>
         );
